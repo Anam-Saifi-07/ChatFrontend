@@ -1,0 +1,144 @@
+.chatbtn{
+    margin-top: 5%;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+.abc{
+    position: fixed;
+    z-index: 99;
+    width: 90%;
+    box-sizing: border-box; /* Ensures padding & borders are included in the 100% width */
+    margin-top: -15px;
+    border: 2px solid white; 
+}
+.xyz{
+    padding-top: 1%;
+    font-weight: 500;
+}
+
+.form-control{
+    background-color: black;
+    color: white;
+    width: 100%;
+}
+
+.form-control:focus, .form-control:focus-visible {
+    background-color: black !important;
+    color: white !important;
+    border-color: #555 !important;
+    box-shadow: none !important;
+}
+       
+.col{
+     padding-left: 0.5;
+    padding-right: 0.5;
+}
+.mycol{
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn-primary{
+    margin-left: 0;
+    width: 100%;
+    font-weight: 500;
+}
+.myrow{
+    padding: 5px;
+    background-color: rgb(53, 42, 42);
+}
+
+
+.myicon{
+    font-size: 1rem;   /* smaller icon to match bottom bar */
+font-size: 1.5rem;   /* adjust size */
+  color: white;      /* Bootstrap primary colour, or any you like */
+  vertical-align: middle;
+}
+
+.bottomtext-center{
+    position: fixed;
+    bottom: 0;
+    left: 10%;
+    z-index: 100;
+    width: 80%;
+    /* keep at bottom and visible */
+}
+
+/* css for MsgBox */
+
+/* Responsive tweaks for ChatHead and ChatBottom on small screens */
+@media (max-width: 600px) {
+    /* ChatHead */
+    .abc {
+        width: 100%;
+        left: 0;
+        margin-top: 0;
+    }
+    .xyz {
+        padding-top: 2%;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    .chatbtn {
+        margin-top: 2%;
+        padding-left: 8px;
+        padding-right: 8px;
+        font-size: 0.9rem;
+    }
+    /* ChatBottom */
+    .bottomtext-center {
+        left: 0;
+        width: 100%;
+    }
+    .myrow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .col-10,
+    .iconcol,
+    .mycol {
+        width: 100% !important;
+        margin-bottom: 5px;
+    }
+    .form-control {
+        font-size: 0.9rem;
+    }
+    .btn-primary {
+        width: 100%;
+    }
+}
+
+.msgContainer{
+    max-width: 30%;
+    min-width: auto;
+    border-radius: 10px;
+
+}
+.sender{
+    color:rgb(69, 244, 84);
+    font-size: larger;
+    font-weight: 500;
+    text-align: left;
+    background-color: rgba(243, 232, 232, 0.386);
+}
+.senderMsg{
+    text-align: left;
+    background-color: rgba(243, 232, 232, 0.386);
+}
+.owner{
+    color:rgb(233, 214, 5);
+    font-size: larger;
+    font-weight: 500;
+    text-align: left;
+    background-color: rgba(243, 232, 232, 0.3);
+}
+.ownerMsg{
+    text-align: left;
+    background-color: rgba(243, 232, 232, 0.3);
+}
+.msgboxmaindiv{
+
+    width: 100%;
+}
