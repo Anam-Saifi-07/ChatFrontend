@@ -34,7 +34,7 @@ function Chat() {
 
   // webSocket connection
   useEffect(() => {
-    const sock = new SockJS("http://localhost:8080/chat");
+    const sock = new SockJS("https://chatbackend-v21r.onrender.com/chat");
     const client = Stomp.over(sock);
     client.connect({}, () => {
       setStompClient(client);
