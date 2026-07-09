@@ -44,6 +44,7 @@ function Chat() {
       if (client.connected) {
         client.disconnect();
       }
+      setStompClient(null);
     };
   }, []);
 
