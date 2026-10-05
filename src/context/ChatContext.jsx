@@ -19,7 +19,6 @@ export const MyChatProvider = ({children}) => {
           setConnected,
           roomOwner,
           setRoomOwner,
-
         }}
       >
         {children}
