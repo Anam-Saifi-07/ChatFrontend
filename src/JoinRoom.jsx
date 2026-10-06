@@ -66,7 +66,7 @@ function JoinRoom() {
       <form onSubmit={joinRoomHandler}>
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
-            Type Your Name
+            Type Your Username <i>(ex: @username_001)</i>
           </label>
           <input
             value={detail.name}
@@ -77,20 +77,22 @@ function JoinRoom() {
             className="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
+            required
           />
         </div>
         <div className="mb-3">
           <label htmlFor="exampleInputPassword1" className="form-label">
-            Type the RoomID
+            Type the Password
           </label>
           <input
             value={detail.id}
             onChange={(event) =>
               setDetail((prev) => ({ ...prev, id: event.target.value }))
             }
-            type="text"
+            type="password"
             className="form-control"
             id="exampleInputPassword1"
+            required
           />
         </div>
 
