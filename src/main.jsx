@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import MainRoutes from './MainRoutes.jsx'
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
-import { MyChatProvider } from './context/ChatContext.jsx'
+import { MyChatProvider, TokenProvider, UserContextProvider } from './context/ChatContext.jsx'
 import { MySocketProvider } from "./context/WebSocketContext";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -22,10 +22,14 @@ createRoot(document.getElementById("root")).render(
       pauseOnHover
       theme="dark"
     />
-    <MyChatProvider>
-      <MySocketProvider>
-        <MainRoutes />
-      </MySocketProvider>  
-    </MyChatProvider>
+    <TokenProvider>
+      <UserContextProvider>
+        <MyChatProvider>
+          <MySocketProvider>
+            <MainRoutes />
+          </MySocketProvider>
+        </MyChatProvider>
+      </UserContextProvider>
+    </TokenProvider>
   </StrictMode>,
 );

@@ -1,11 +1,11 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 import Head from "./Head";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { isValidElement, useState } from "react";
+import { data, Link, useNavigate, useSearchParams } from "react-router";
+import { isValidElement, useContext, useState } from "react";
 import { toast } from "react-toastify";
-import { createRoomService } from "./Services/RoomService";
-import useMyChatContext from "./context/ChatContext";
+import { createRoomService, userRegister } from "./Services/RoomService";
+import useMyChatContext, { Tokencontext, UserContext } from "./context/ChatContext";
 function App() {
   const {
     roomId,
@@ -18,16 +18,17 @@ function App() {
     setRoomOwner
   } = useMyChatContext();
 
+  const { userDetails,setUserDetails } =useContext(UserContext);
+  const { token,setToken } = useContext(Tokencontext);
   const navigate = useNavigate();
 
-  const [detail, setDetail] = useState({
+  const [formData, setFormData] = useState({
     name: "",
-    // id:""
+    mail: "",
+    password: "",
     gender: "",
     age: "",
-    phone: "",
-    email: "",
-    password:""
+    phoneNo:""
   });
 
   const joinChat = () => {
@@ -36,60 +37,86 @@ function App() {
     }
   }
 
-  const createRoom = async (event) => {
-    // console.log(detail);
+  const registeringNewUser = async (event) => { 
     event.preventDefault();
     if (isformValidate()) {
-  
       // call api
       try {
-        const response = await createRoomService(detail);
+        //map the gender to boolean isMale for backend
+        // 1. Extract gender and gather all other fields
+        const { gender, ...otherFields } = formData;
+
+        // 2. Build backend payload with mapped boolean
+        const payload = {
+          ...otherFields,
+          isMale: gender.toLowerCase() == "male",
+        };
+
+        const response = await userRegister(payload);
+        
+        // console.log(formData);
+        // console.log(response);
+        const responseData = response.data;
+        setUserDetails({
+          name: responseData.name,
+          mail: responseData.mail,
+          gender: responseData.gender?true:false,
+          age: responseData.age,
+          phoneNo: responseData.phoneNo,
+          id:responseData.id
+        });
+        setToken(responseData.token);
+        console.log("token:" + responseData.token);
+        // console.log("userDetails:" + userDetails);
         toast.success("Room created Sucessfully...");
-        setCurrentUser(detail.name);
-        setRoomId(detail.id);
-        setRoomOwner(response.data.name);
-        setConnected(true);
+        // setCurrentUser(formData.name);
+        // setRoomId(formData.id);
+        // setRoomOwner(response.data.name);
+        // setConnected(true);
         // join the /chat directly after made the room sucessfully
-        navigate('/chat');
+        // navigate('/chat');
+
+        //when got register sucessfully
+        setFormData({
+          name: "",
+          mail: "",
+          password: "",
+          gender: "",
+          age: "",
+          phoneNo: ""
+        });
       } catch (error) {
-        console.log(error.response);
-        console.log(error.response.status);
-        console.log(error.response.data);
-        if (error.response.status === 400) {
-          toast.error(error.response.data);
-          return toast.info(detail.id+" ID: already Exist, Enter another");
-        }   
+        // console.log(error.response);
+        // console.log(error.response.status);
+        // console.log(error.response.data);
+        // if (error.response.status === 400) {
+        //   toast.error(error.response.data);
+        //   return toast.info(formData.id+" ID: already Exist, Enter another");
+        // }   
       }
     }
   
-    setDetail({
-      name: "",
-      // id:""
-      gender: "",
-      age: "",
-      phone: "",
-      email: "",
-      password: "",
-    });
+   
   }
   const isformValidate = () => {
-     if (!detail.name.trim()) {
+     if (!formData.name.trim()) {
        toast.error("User Name is required!");
        return false;
      }
     if (
-      !detail.age.trim()
+      !formData.age.trim()
     ) {
       toast.error("User age required!");
       return false;
     }
-    if (!detail.gender.trim() 
+    if (!formData.gender.trim() 
     ) {
+      console.log(formData.gender);
       toast.error("User Gender required!");
       return false;
     }
     if (
-      !detail.password.trim()
+      !formData.password.trim()
     ) {
       toast.error("Password is required!");
       return false;
@@ -100,16 +127,17 @@ function App() {
   return (
     <>
       <Head></Head>
-      <form onSubmit={createRoom}>
+      <form onSubmit={registeringNewUser}>
         {/* Name */}
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Type Your Name <i>(ex: fullName)</i>
+            <i style={{ color: "red" }}>*</i>
           </label>
           <input
-            value={detail.name}
+            value={formData.name}
             onChange={(event) =>
-              setDetail((prev) => ({ ...prev, name: event.target.value }))
+              setFormData((prev) => ({ ...prev, name: event.target.value }))
             }
             type="text"
             className="form-control"
@@ -120,27 +148,33 @@ function App() {
         </div>
         {/* Gender */}
         <div className="mb-3">
+          <label htmlFor="exampleInputEmail1" className="form-label">
+            Select Your Gender <i style={{ color: "red" }}>*</i>
+          </label>
           <select
+            value={formData.gender}
             className="form-select"
             aria-label="Default select example"
+            onChange={(e) =>
+              setFormData((p) => ({ ...p, gender: e.target.value }))
+            }
             required
           >
-            <option selected>Select Your Gender</option>
+            <option value="" disabled hidden></option>
             <option value="male">Male</option>
             <option value="female">Female</option>
-            <option value="custom">Custom</option>
           </select>
         </div>
 
         {/* Age */}
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
-            Enter Your Age <i>(ex: 21)</i>
+            Enter Your Age <i>(ex: 21)</i> <i style={{ color: "red" }}>*</i>
           </label>
           <input
-            value={detail.age}
+            value={formData.age}
             onChange={(event) =>
-              setDetail((prev) => ({ ...prev, age: event.target.value }))
+              setFormData((prev) => ({ ...prev, age: event.target.value }))
             }
             type="number"
             className="form-control"
@@ -150,14 +184,16 @@ function App() {
           />
         </div>
         {/* Pnone Number */}
+
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Type Your Phone No <i>(ex: 967800xxxx)</i>
+            <i style={{ color: "red" }}>*</i>
           </label>
           <input
-            value={detail.phone}
+            value={formData.phoneNo}
             onChange={(event) =>
-              setDetail((prev) => ({ ...prev, phone: event.target.value }))
+              setFormData((prev) => ({ ...prev, phoneNo: event.target.value }))
             }
             type="tel"
             className="form-control"
@@ -172,9 +208,9 @@ function App() {
             Type Your Email <i>(ex: username001@gmail.com)</i>
           </label>
           <input
-            value={detail.email}
+            value={formData.mail}
             onChange={(event) =>
-              setDetail((prev) => ({ ...prev, email: event.target.value }))
+              setFormData((prev) => ({ ...prev, mail: event.target.value }))
             }
             type="text"
             className="form-control"
@@ -186,11 +222,12 @@ function App() {
         <div className="mb-3">
           <label htmlFor="exampleInputPassword1" className="form-label">
             Type Your Password <i>(ex: suggests strong one)</i>
+            <i style={{ color: "red" }}>*</i>
           </label>
           <input
-            value={detail.password}
+            value={formData.password}
             onChange={(event) =>
-              setDetail((prev) => ({ ...prev, password: event.target.value }))
+              setFormData((prev) => ({ ...prev, password: event.target.value }))
             }
             type="password"
             className="form-control"
