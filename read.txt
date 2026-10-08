@@ -1,0 +1,6 @@
+8-10-2026: i did register done
+next task: register me token update karna context me, 
+jab login karege kab token ko update karna even use rko bhi kabhi karna , 
+na ki register ke time ,login ka feature bhi built karna ,
+jisse hi user login kareto use /home par ly jana
+ next: home ko bana hai , aur toggle button 
