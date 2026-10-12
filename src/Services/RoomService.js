@@ -17,3 +17,9 @@ export const userRegister = async (userDetails) => {
   const response = await httpclient.post("/api/auth/register", userDetails);
   return response;
 };
+
+//for user login
+export const userLoginService = async (userDetails) => {
+  const response = await httpclient.post("/api/auth/login", userDetails);
+  return response;
+};

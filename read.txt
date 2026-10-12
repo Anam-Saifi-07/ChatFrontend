@@ -4,3 +4,6 @@ jab login karege kab token ko update karna even use rko bhi kabhi karna ,
 na ki register ke time ,login ka feature bhi built karna ,
 jisse hi user login kareto use /home par ly jana
  next: home ko bana hai , aur toggle button 
+
+
+12/oct: error occuring on register ,login both include the backend , pata nhi kyu a raha hai ,fix karan hai 

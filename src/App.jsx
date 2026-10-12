@@ -18,8 +18,8 @@ function App() {
     setRoomOwner
   } = useMyChatContext();
 
-  const { userDetails,setUserDetails } =useContext(UserContext);
-  const { token,setToken } = useContext(Tokencontext);
+  const { setUserDetails } =useContext(UserContext);
+  const { setToken } = useContext(Tokencontext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -31,11 +31,11 @@ function App() {
     phoneNo:""
   });
 
-  const joinChat = () => {
-    if (isformValidate) {
-      navigate("/chat");
-    }
-  }
+  // const joinChat = () => {
+  //   if (isformValidate) {
+  //     navigate("/chat");
+  //   }
+  // }
 
   const registeringNewUser = async (event) => { 
     event.preventDefault();
@@ -55,7 +55,7 @@ function App() {
         const response = await userRegister(payload);
         
         // console.log(formData);
-        // console.log(response);
+        console.log(response);
         const responseData = response.data;
         setUserDetails({
           name: responseData.name,
@@ -74,7 +74,7 @@ function App() {
         // setRoomOwner(response.data.name);
         // setConnected(true);
         // join the /chat directly after made the room sucessfully
-        // navigate('/chat');
+        navigate('/home');
 
         //when got register sucessfully
         setFormData({
@@ -86,13 +86,13 @@ function App() {
           phoneNo: ""
         });
       } catch (error) {
-        // console.log(error.response);
-        // console.log(error.response.status);
-        // console.log(error.response.data);
-        // if (error.response.status === 400) {
-        //   toast.error(error.response.data);
-        //   return toast.info(formData.id+" ID: already Exist, Enter another");
-        // }   
+        console.log(error.response);
+        console.log(error.response.status);
+        console.log(error.response.data);
+        if (error.response.status === 400) {
+          toast.error(error.response.data);
+          return toast.info(formData.id+" ID: already Exist, Enter another");
+        }   
       }
     }
   
@@ -236,10 +236,10 @@ function App() {
         </div>
 
         <button type="submit" className="btn btn-primary">
-          Create Room
+          Register
         </button>
         <Link to="/JoinRoom" className="nav-link">
-          Join Room
+          Login
         </Link>
       </form>
     </>
