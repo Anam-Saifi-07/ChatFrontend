@@ -76,7 +76,7 @@ function JoinRoom() {
            password: "",
          });
           navigate("/home");
-         toast.success("Room Joined.");
+         toast.success("Login Sucessfully.");
        } catch (error) {
          console.log(error.response);
          if (error.response.status === 400) {

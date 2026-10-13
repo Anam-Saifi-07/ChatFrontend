@@ -68,7 +68,7 @@ function App() {
         setToken(responseData.token);
         console.log("token:" + responseData.token);
         // console.log("userDetails:" + userDetails);
-        toast.success("Room created Sucessfully...");
+        toast.success("Registered created Sucessfully...");
         // setCurrentUser(formData.name);
         // setRoomId(formData.id);
         // setRoomOwner(response.data.name);

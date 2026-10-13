@@ -5,9 +5,16 @@ export const httpclient = axios.create({
     baseURL: baseURL
 });
 httpclient.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+  // Skip adding token for login or register endpoints
+  if (
+    config.url.includes("/auth/login") ||
+    config.url.includes("/auth/register")
+  ) {
     return config;
+  }
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 // RESPONSE: 401 = token invalid → auto logout
 httpclient.interceptors.response.use(

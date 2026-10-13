@@ -7,3 +7,5 @@ jisse hi user login kareto use /home par ly jana
 
 
 12/oct: error occuring on register ,login both include the backend , pata nhi kyu a raha hai ,fix karan hai 
+
+13 /oct : solved the above issue
