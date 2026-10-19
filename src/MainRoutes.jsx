@@ -3,6 +3,7 @@ import JoinRoom from "./JoinRoom";
 import App from "./App";
 import Chat from "./Chat";
 import HomeView from "./components/views/HomeView";
+import { ProfileView } from "./components/views/ProfileView";
 function MainRoutes() {
     return (
       <>
@@ -12,6 +13,7 @@ function MainRoutes() {
             <Route path="/home" element={<HomeView></HomeView>}></Route> 
             <Route path="/joinRoom" element={<JoinRoom></JoinRoom>}></Route> 
             <Route path="/chat" element={<Chat></Chat>}></Route> 
+            <Route path="/profile" element={<ProfileView></ProfileView>}></Route> 
           </Routes>
         </BrowserRouter>
       </>

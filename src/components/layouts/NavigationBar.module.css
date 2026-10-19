@@ -1,0 +1,16 @@
+.centreToggle{
+    max-width: 40rem;
+    margin: auto;
+    background-color: rgb(62, 185, 185);
+    display: flex;
+    justify-content: space-around;
+}
+.btn{
+    height: 90%;
+    width: 90%;
+    background-color: rgb(62, 185, 185);
+    color: black;
+    font-size: larger;
+    border: 0px ;
+    font-weight: 600;
+}
