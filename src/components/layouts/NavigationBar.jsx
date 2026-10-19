@@ -1,50 +1,52 @@
-import { useNavigate } from "react-router";
 import styles from "../layouts/NavigationBar.module.css";
-function NavigationBar(params) {
+
+function NavigationBar({ activeTab = "home", onTabChange = () => {} }) {
   const tabs = [
-    {id:"home",name:"home"},
-    {id:"person",name:"person"},
-    {id:"room",name:"room"},
-    {id:"profile",name:"profile"}
+    { id: "home", name: "home" },
+    { id: "person", name: "person" },
+    { id: "room", name: "room" },
+    { id: "profile", name: "profile" },
+    { id: "create", name: "create" },
   ];
-  const navigate=useNavigate();
-   function handleBtn(param) {
-     if (param == "profile") {
-       navigate('/profile');
-     } else if (param == "home") {
-       navigate('/home');
-     } else if (param == "room") {
-       navigate('/room');
-     } else {
-       navigate('/person');
-    }
+
+  function handleCreate() {
+    // Yahan create modal open karne ki logic aayegi
   }
-    return (
-      <>
-        <div
-          className={`btn-group btn-group-toggle ${styles.centreToggle}`}
-          data-toggle="buttons"
-        >
-          <label className="btn  active">
-            <button className={`${styles.btn}`} onClick={handleBtn(tabs[0].id)}>{tabs[0].name}</button>
-          </label>
-          <label className="btn ">
-            <button className={`${styles.btn}`} onClick={handleBtn(tabs[1].id)}>
-              {tabs[1].name}
+
+  return (
+    <div
+      className={`btn-group btn-group-toggle ${styles.centreToggle}`}
+      data-toggle="buttons"
+    >
+      {tabs.map((tab) => {
+        // create button sirf 'person' ya 'room' tab par dikhega
+        if (tab.id === "create") {
+          if (activeTab !== "person" && activeTab !== "room") return null;
+          return (
+            <label key={tab.id} className="btn">
+              <button className={`${styles.btn}`} onClick={handleCreate}>
+                {tab.name}
+              </button>
+            </label>
+          );
+        }
+
+        return (
+          <label
+            key={tab.id}
+            className={`btn ${activeTab === tab.id ? "active" : ""}`}
+          >
+            <button
+              className={`${styles.btn}`}
+              onClick={() => onTabChange(tab.id)}
+            >
+              {tab.name}
             </button>
           </label>
-          <label className="btn ">
-            <button className={`${styles.btn}`} onClick={handleBtn(tabs[2].id)}>
-              {tabs[2].name}
-            </button>
-          </label>
-          <label className="btn ">
-            <button className={`${styles.btn}`} onClick={handleBtn(tabs[3].id)}>
-              {tabs[3].name}
-            </button>
-          </label>
-        </div>
-      </>
-    );
+        );
+      })}
+    </div>
+  );
 }
+
 export default NavigationBar;

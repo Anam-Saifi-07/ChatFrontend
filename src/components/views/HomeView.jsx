@@ -1,6 +1,5 @@
 // src/components/views/HomeView.jsx
-import React, { useState } from "react";
-import NavigationBar from "../layouts/NavigationBar";
+import { useState } from "react";
 
 const HomeView = ({
   exploreUsers = [
@@ -25,7 +24,7 @@ const HomeView = ({
 
   return (
     <>
-      <div className="container-fluid py-3" style={{ height: "80vh" }}>
+      <div className="container-fluid py-3 h-100">
         <div className="row h-100 g-3">
           {/* Left Column: EXPLORE */}
           <div className="col-md-6 d-flex flex-column">
@@ -109,12 +108,8 @@ const HomeView = ({
           </div>
         </div>
       </div>
-
-      <NavigationBar></NavigationBar>
     </>
   );
-  
-    
 };
 
 export default HomeView;

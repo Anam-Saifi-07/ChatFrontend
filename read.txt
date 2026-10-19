@@ -9,3 +9,7 @@ jisse hi user login kareto use /home par ly jana
 12/oct: error occuring on register ,login both include the backend , pata nhi kyu a raha hai ,fix karan hai 
 
 13 /oct : solved the above issue
+20oct: toggle done
+next :user crate room,person chat ,and join by room,person by include
+next: upper wala task complete hune ke baad 
+,request send accept denay karne ka system bana hai ,aur backend pa rbhi ek table banani hugi is ke ly
