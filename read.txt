@@ -13,3 +13,312 @@ jisse hi user login kareto use /home par ly jana
 next :user crate room,person chat ,and join by room,person by include
 next: upper wala task complete hune ke baad 
 ,request send accept denay karne ka system bana hai ,aur backend pa rbhi ek table banani hugi is ke ly
+
+
+next to do in baackend for build request accept/denied 
+prompt " Prompt 1 — Build                                                                                                                                                               
+                                                                                                                                            Context                                 
+     You are working on a Spring Boot + Lombok + Spring Data JPA chatting backend                                                           41,430 tokens                           
+     located at backend/src/main/java/chattingAPI/backend/                                                                                  21% used                                
+                                                                                                                                            $0.00 spent                             
+     GOAL: Add a permission-based connection system for group chat and direct chat.                                                                                                 
+                                                                                                                                            LSP                                     
+     EXISTING CONTEXT (do not break anything):                                                                                              LSPs are disabled                       
+     - entities: Person (id: String UUID), Room (id: String UUID, Boolean isGroup,                                                                                                  
+       String name [currently nullable=false]), RoomMembers (composite key                                                                                                          
+       RoomMemberId(personId, roomId), fields: person, room, role, date)                                                                                                            
+     - repos: PersonRepo (findByName), RoomRepo (findAllByIsGroupTrue/False),                                                                                                       
+       RoomMemberRepo (findByPersonId, findByRoomId), MessageRepo                                                                                                                   
+     - Service: Service/ChatService.java (createRoom, getUserRooms, getAllGroups,                                                                                                   
+       getAllGroupsExceptCurrent, allGroupsOfCurrentUser,                                                                                                                           
+       exploreAllNewPersonForPersonalChatting, getAllPersonThatAlreadyinChatting,                                                                                                   
+       roomOfPersonsalChat, getRoomMessages, saveAndFormatMessage)                                                                                                                  
+     - Controllers: controller/ChatController2.java (REST, base path                                                                                                                
+       /api/v2/rooms, uses Authentication.getName() as currentUsername),                                                                                                            
+       controller/ChatSocketController.java (websocket message flow)                                                                                                                
+     - Follow existing code style: constructor injection, RuntimeException with                                                                                                     
+       simple messages, RoomResponse DTO pattern. 
+       FEATURE REQUIREMENTS:                                                                                                                  168Z                                    
+                                                                                                                                                                                    
+     1. New enum RequestStatus: PENDING, ACCEPTED, DENIED                                                                                   Context                                 
+     2. New enum RequestType: DIRECT, GROUP                                                                                                 41,430 tokens                           
+     3. New entity ConnectionRequest:                                                                                                       21% used                                
+        id (String UUID), type (RequestType), senderId (Person, ManyToOne),                                                                 $0.00 spent                             
+        receiverId (Person, ManyToOne), roomId (Room, ManyToOne, nullable - only                                                                                                    
+        for GROUP), status (RequestStatus), createdAt (@CreationTimestamp)                                                                  LSP                                     
+     4. New repo ConnectionRequestRepo with finder methods for:                                                                             LSPs are disabled                       
+        - all requests received by a person (pending)                                                                                                                               
+        - all requests sent by a person                                                                                                                                             
+        - check for existing duplicate pending request (direct: sender+receiver,                                                                                                    
+          group: sender+room)                                                                                                                                                       
+                                                                                                                                                                                    
+     FLOW - DIRECT CHAT:                                                                                                                                                            
+     - POST /api/v2/rooms/connectionRequests/direct/{otherId}                                                                                                                       
+       = current user sends direct connection request to otherId.                                                                                                                   
+       Reject if: same user, already accepted direct room exists between them,                                                                                                      
+       or a PENDING request already exists.                                                                                                                                         
+     - Room is NOT created at request time.                                                                                                                                         
+                                                                                                                                                                                    
+     FLOW - GROUP CHAT:                                                                                                                                                             
+     - POST /api/v2/rooms/connectionRequests/group/{roomId}                                                                                                                         
+       = current user requests to join group roomId. Reject if: already member,                                                                                                     
+       already PENDING, room is not a group. 
+        FLOW - ACTION (both types):                                                                                                            168Z                                    
+     - PUT /api/v2/rooms/connectionRequests/{requestId}?action=accept|deny                                                                                                          
+       Only the request RECEIVER can do this.                                                                                               Context                                 
+       - accept DIRECT: create the direct Room (isGroup=false, name="" or fix                                                               41,430 tokens                           
+         Room.name nullable issue) + add both persons to RoomMembers, set ACCEPTED                                                          21% used                                
+       - accept GROUP: add sender to RoomMembers as MEMBER (role Roles.MEMEBER),                                                            $0.00 spent                             
+         set ACCEPTED                                                                                                                                                               
+       - deny: set DENIED, nothing else                                                                                                     LSP                                     
+     - GET /api/v2/rooms/connectionRequests                                                                                                 LSPs are disabled                       
+       = current user ki received PENDING requests list                                                                                                                             
+     - GET /api/v2/rooms/connectionRequests/sent                                                                                                                                    
+       = current user ki sent requests list                                                                                                                                         
+     - New DTOs: ConnectionRequestResponse (id, type, senderId, senderName,                                                                                                         
+       receiverId, roomId, roomName, status, createdAt) - NEVER expose Person                                                                                                       
+       password in any response.
+                                                                                                                                                                                         
+     SECURITY RULES (critical):                                                                                                             LSP                                     
+     - Add a service method assertMember(roomId, personId) that throws if person                                                            LSPs are disabled                       
+       is not in RoomMembers for that room.                                                                                                                                         
+     - In ChatSocketController / ChatService.saveAndFormatMessage: before saving                                                                                                    
+       any message, verify the sender is a member of the target room. If not,                                                                                                       
+       throw RuntimeException("Not a member of this room").                                                                                                                         
+     - CreateRoom endpoint: block direct-room creation directly by user; direct                                                                                                     
+       rooms only via connection request accept. (Group creation by user stays                                                                                                      
+       allowed - creator becomes ADMIN.)                                                                                                                                            
+     - Add @JsonIgnore on Person.password field so it never leaks in JSON.                                                                                                          
+                                                                                                                                                                                    
+     DO NOT modify existing method signatures/return types used by current                                                                                                          
+     endpoints. Add new code alongside. Keep style consistent (Hindi-English                                                                                                        
+     comments ok, no fancy patterns). After implementing, run:                                                                                                                      
+       mvnw.cmd -q -DskipTests compile                                                                                                                                              
+     and fix all compilation errors.                                                                                                                                                
+                                         
+
+                                         Prompt 2 — Verify / Check                                                                                                              $0.00 spent                             
+                                                                                                                                                                                    
+     Auditor task: VERIFY ONLY, do not modify any code unless asked.                                                                        LSP                                     
+                                                                                                                                            LSPs are disabled                       
+     Project: Spring Boot chatting backend at backend/                                                                                                                              
+     Run: mvnw.cmd -q -DskipTests compile  (must pass, zero errors)                                                                                                                 
+                                                                                                                                                                                    
+     Check and report PASS/FAIL with file:line for each:                                                                                                                            
+                                                                                                                                                                                    
+     A. BUILD                                                                                                                                                                       
+     1. Compilation clean, no missing methods between ChatController2,                                                                                                              
+        ChatService, and all repos.                                                                                                                                                 
+                                                                                                                                                                                    
+     B. NEW FEATURE CORRECTNESS (ConnectionRequest system)                                                                                                                          
+     2. ConnectionRequest entity exists with status PENDING/ACCEPTED/DENIED and                                                                                                     
+        DIRECT/GROUP type; repo has duplicate-pending-request check.                                                                                                                
+     3. DIRECT request: room gets created ONLY on accept - not at request time.                                                                                                     
+     4. GROUP request: membership added ONLY on admin accept.                                                                                                                       
+     5. Only RECEIVER can accept/deny (sender ko apni request accept karne ka                                                                                                       
+        access nahi).                                                                                                                                                               
+     6. Duplicate request blocked (same pending request dobara nahi).                                                                                                               
+     7. Already-connected check: accepted direct room hone pe dobara request
+
+      8. Sent/Received request list endpoints working with correct filtering.                                                                                                        
+                                                                                                                                            Context                                 
+     C. SECURITY                                                                                                                            41,430 tokens                           
+     9. Sender of a message MUST be member of that room - verify check exists in                                                            21% used                                
+        websocket message path (saveAndFormatMessage or controller). Non-member                                                             $0.00 spent                             
+        ka message save nahi hona chahiye.                                                                                                                                          
+     10. Direct room creation bypass blocked (POST /api/v2/rooms se naya direct                                                             LSP                                     
+         room nahi banna chahiye).                                                                                                          LSPs are disabled                       
+     11. Person.password JSON me leak nahi hota (@JsonIgnore present) - check                                                                                                       
+         responses of exploreAllNewPerson, getAllPersonThatInChatting,                                                                                                              
+         allIndividualPerson, connection request lists.                                                                                                                             
+     12. Room.name nullable issue fixed ya direct-accept flow null name na de.                                                                                                      
+                                                                                                                                                                                    
+     D. REGRESSION                                                                                                                                                                  
+     13. Pehle ke saare endpoints unchanged aur functional:                                                                                                                         
+         /allGroupsExceptCurrent, /allGroupsOfCurrentUser, /exploreAllNewPerson,                                                                                                    
+         /getAllPersonThatInChatting, /{otherId}/getRoomOfCurrentAndOther,                                                                                                          
+         /{roomId}/messages, POST create room (group), GET user rooms.                                                                                                              
+     14. RoomMembers ab bhi sirf ACCEPTED connections contain kare - PENDING                                                                                                        
+         request kabhi membership row na banaye.                                                                                                                                    
+                                                                                                                                                                                    
+     E. DB                                                                                                                                                                          
+     15. New table ConnectionRequest auto-creates (check application.properties                                                                                                     
+         ddl-auto / schema), no manual SQL needed. 
+
+
+
+         /// for request response implementation
+         STEP 1 — API helper banao
+Create: src/api/connectionApi.js
+- Base axios instance with Authorization: Bearer <token> (localStorage se)
+- 7 functions: sendPersonal, getPending, getSent, accept, reject, joinGroup, getGroupRequests
+- Error ka message field extract karke throw karo
+STEP 2 — Requests Page (Dashboard)
+Create: src/pages/ConnectionRequests.jsx
+- Route: /requests
+- On mount → getPending() call
+- Har card: senderName + Accept/Reject buttons
+- Accept → accept(id) → list refresh; Reject → reject(id) → list refresh
+- Empty state: "No pending requests"
+STEP 3 — Explore/People Page mein Connect button
+Edit: jahan GET /api/v2/rooms/exploreAllNewPerson list hoti hai
+- Har user card pe "Connect" button
+- Click → sendPersonal({receiverId}) → button state → "Pending" (disabled)
+- Error message toast dikhao ("Pehle se connected ho" etc.)
+STEP 4 — Sent requests indicator
+Edit: same Explore page
+- Mount pe getSent() call → jinke id pending mein hain unke button pe "Pending" dikhao (refresh hota hi state sahi)
+STEP 5 — Group Join Page
+Create: src/components/JoinGroupButton.jsx
+- Props: roomId
+- Click → joinGroup({roomId}) → "Request Sent" (disabled)
+- Already member wale groups pe mat dikhao (rooms list se check)
+STEP 6 — Admin Panel (Group Requests)
+Create: src/pages/GroupRequests.jsx
+- Route: /groups/:roomId/requests
+- Sirf admin ko dikhao (group ka role === 'ADMIN' check)
+- getGroupRequests(roomId) → list + Accept/Reject
+STEP 7 — Routing + Nav
+Edit: App.jsx / router
+- Add /requests route + navbar mein 🔔 badge: getPending().length (notification count)
+STEP 8 — Accept ke baad room refresh
+- Personal accept success → rooms list GET /api/v2/rooms refetch → naya chat dikhe
+- Group accept (admin) → same, member list/rooms refresh
+STEP 9 — Toast/Error handling
+- Sab API errors pe error.message toast (sirf message dikhao, console bhi)
+STEP 10 — Test (browser)
+1. A se B ko Connect → B ko /requests pe dikhe
+2. Accept → dono ke rooms mein DM aaye
+3. Double click Accept → error toast
+4. Group join → admin accept → group B ke rooms mein
+File Summary
+Action	File
+Create	src/api/connectionApi.js
+Create	src/pages/ConnectionRequests.jsx
+Create	src/pages/GroupRequests.jsx
+Create	src/components/JoinGroupButton.jsx
+Edit	Explore/People page (Connect + Pending button)
+Edit	App.jsx (routes + nav badge)
+Order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+
+
+
+
+import { useContext, useState, useEffect } from "react";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import styles from "./ProfileView.module.css";
+import { UserContext } from "../../context/ChatContext";
+import {
+  getOtherPersonalRequestService,
+  acceptRequestService,
+  rejectRequestService,
+} from "../../Services/RoomService";
+
+export function ProfileView() {
+  const { userDetails } = useContext(UserContext);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const metaFields = [
+    {
+      key: "gender",
+      label: "Gender",
+      icon: "bi-person-badge",
+      value: userDetails.gender,
+    },
+    {
+      key: "age",
+      label: "Age",
+      icon: "bi-calendar-heart",
+      value: userDetails.age,
+    },
+    {
+      key: "phoneNo",
+      label: "Phone No",
+      icon: "bi-telephone",
+      value: userDetails.phoneNo,
+    },
+    {
+      key: "mail",
+      label: "Email",
+      icon: "bi-envelope",
+      value: userDetails.mail,
+    },
+  ];
+
+  const fetchRequests = async () => {
+    try {
+      const res = await getOtherPersonalRequestService();
+      setRequests(res.data ?? []);
+    } catch (error) {
+      console.log("Failed to fetch requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const handleAccept = async (requestId) => {
+    try {
+      await acceptRequestService(requestId);
+      setRequests((prev) => prev.filter((r) => r.id !== requestId));
+    } catch (error) {
+      console.log("Failed to accept:", error);
+      alert("Failed to accept request.");
+    }
+  };
+
+  const handleReject = async (requestId) => {
+    try {
+      await rejectRequestService(requestId);
+      setRequests((prev) => prev.filter((r) => r.id !== requestId));
+    } catch (error) {
+      console.log("Failed to reject:", error);
+      alert("Failed to reject request.");
+    }
+  };
+
+  return (
+    <div className={styles.profileContainer}>
+      {/* 1. Profile Details Section */}
+      <div className={styles.profileCard}>
+        <div className={styles.avatar}>
+          {(userDetails.name || "?").charAt(0)}
+        </div>
+        <h3 className={styles.userName}>
+          {userDetails.name || "Unknown User"}
+        </h3>
+        <p className={styles.userId}>@{userDetails.id || "no-id"}</p>
+
+        <div className={styles.userMeta}>
+          {metaFields.map((field) => (
+            <div key={field.key} className={styles.metaItem}>
+              <i className={`bi ${field.icon} ${styles.metaIcon}`}></i>
+              <span className={styles.metaLabel}>{field.label}</span>
+              <span className={styles.metaValue} title={field.value || ""}>
+                {field.value || "-"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. Requests Section Container */}
+      <div className={styles.requestsContainer}>
+        <h5 className={styles.sectionTitle}>
+          <i className={`bi bi-inbox ${styles.sectionTitleIcon}`}></i>
+          Requests
+        </h5>
+
+        {/* TODO: Request accept and deny section will be implemented here later */}
+        <p className={styles.noRequestsText}>
+          <i className="bi bi-envelope-open me-2"></i>
+          No requests to display right now.
+        </p>
+      </div>
+    </div>
+  );
+}

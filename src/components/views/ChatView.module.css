@@ -1,0 +1,138 @@
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #121212;
+  box-sizing: border-box;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #2d2d2d;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.backBtn {
+  background: transparent;
+  border: 1px solid #2a2f3a;
+  color: #e8ecf5;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.backBtn:hover {
+  border-color: #0d6efd;
+  color: #4d8dff;
+}
+
+.messagesArea {
+  flex: 1;
+  /* left + right margin for messages */
+  padding: 20px clamp(16px, 6vw, 48px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.messageBubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.incoming {
+  background-color: #2d2d2d;
+  color: #ffffff;
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+.outgoing {
+  background-color: #0d6efd;
+  color: #ffffff;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.inputArea {
+    height: 50px;
+  display: flex;
+  align-items: center;
+  /* same side margin as messages so input aligns with chat */
+  /* padding: 12px clamp(16px, 6vw, 48px); */
+  background-color: black;
+  border-top: 1px solid #2d2d2d;
+  gap: 1px;
+  /* box-sizing: border-box; */
+}
+
+.chatInput {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  background-color: #000000;
+  /* koi grey box na dikhe -> border black */
+  border: 1px solid #000000;
+  border-radius: 8px;
+  color: #ffffff;
+  outline: none;
+  box-shadow: none;
+}
+
+.chatInput:focus,
+.chatInput:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: #000000;
+}
+
+/* browser autofill ka grey box bhi black kar do */
+.chatInput:-webkit-autofill,
+.chatInput:-webkit-autofill:hover,
+.chatInput:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #000000 inset;
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-out;
+}
+
+.chatInput::placeholder {
+  color: #888888;
+}
+
+.sendButton {
+  height: 46px;
+  flex-shrink: 0;
+  padding: 0 22px;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sendButton:hover {
+  background-color: #0b5ed7;
+}

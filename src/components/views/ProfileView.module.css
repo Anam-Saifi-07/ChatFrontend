@@ -151,6 +151,98 @@
   font-size: 0.9rem;
 }
 
+.requestItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #12151c;
+  border: 1px solid #2a2f3a;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.requestItem:hover {
+  border-color: #0d6efd;
+}
+
+.requestAvatar {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d6efd 0%, #7c3aed 100%);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.requestInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.requestName {
+  color: #e8ecf5;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.requestId {
+  color: #8b93a7;
+  font-size: 0.8rem;
+}
+
+.requestActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.acceptBtn {
+  background: #0d6efd;
+  border: none;
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s ease;
+}
+
+.acceptBtn:hover {
+  background: #0b5ed7;
+}
+
+.rejectBtn {
+  background: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.rejectBtn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
 @media (max-width: 380px) {
   .userMeta {
     grid-template-columns: 1fr 1fr;
