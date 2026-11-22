@@ -1,6 +1,9 @@
 import axios from "axios";
-// export const baseURL = "https://chatbackend-v21r.onrender.com"; // for deployed one backend url
-export const baseURL = "http://localhost:8080/"; 
+// Dev: empty string => same-origin requests, Vite proxy forwards to localhost:8080 (avoids CORS)
+export const baseURL = (
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.DEV ? "" : "https://chatbackend-v21r.onrender.com")
+).replace(/\/+$/, "");
 export const httpclient = axios.create({
     baseURL: baseURL
 });

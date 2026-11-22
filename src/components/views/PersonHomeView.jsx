@@ -38,10 +38,6 @@ const PersonHomeView = ({
     };
   }, []);
 
-  // const handleSendClick = (userId) => {
-  //   setSentRequests((prev) => ({ ...prev, [userId]: true }));
-  //   onSendRequest(userId);
-  // };
 
   const handleSendClick = async (userId) => {
     try {
@@ -77,10 +73,10 @@ const PersonHomeView = ({
                 return (
                   <div key={user.id} className={styles.rowItem}>
                     <div className={styles.avatar}>
-                      {(user.fullName || "?").charAt(0)}
+                      {(user.name || "?").charAt(0)}
                     </div>
                     <div className={styles.rowText}>
-                      <span className={styles.name}>{user.fullName}</span>
+                      <span className={styles.name}>{user.name}</span>
                       <span className={styles.handle}>@{user.name}</span>
                     </div>
                     <button
@@ -116,15 +112,15 @@ const PersonHomeView = ({
                 <div
                   key={item.room.id}
                   onClick={() =>
-                    onSelectChat({ id: item.room.id, name: item.name })
+                    onSelectChat({ id: item.room.id, name: item.person.name })
                   }
                   className={styles.rowItem}
                 >
                   <div className={styles.avatar}>
-                    {(item.name || "?").charAt(0)}
+                    {(item.person.name || "?").charAt(0)}
                   </div>
                   <div className={styles.rowText}>
-                    <span className={styles.name}>{item.name}</span>
+                    <span className={styles.name}>{item.person.name}</span>
                     <span className={styles.tag}>
                       {item.room.name === "" ? item.person.name : item.room.name}
                     </span>

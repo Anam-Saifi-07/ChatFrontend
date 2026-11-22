@@ -1,24 +1,15 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import './App.css';
-import Head from "./Head";
-import { data, Link, useNavigate, useSearchParams } from "react-router";
-import { isValidElement, useContext, useState } from "react";
+import "./App.css";
+import { Link, useNavigate } from "react-router";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { createRoomService, userRegister } from "./Services/RoomService";
-import useMyChatContext, { Tokencontext, UserContext } from "./context/ChatContext";
-function App() {
-  const {
-    roomId,
-    currentUser,
-    setRoomId,
-    setCurrentUser,
-    connected,
-    setConnected,
-    roomOwner,
-    setRoomOwner
-  } = useMyChatContext();
+import { userRegister } from "./Services/RoomService";
+import { Tokencontext, UserContext, initialUser } from "./context/ChatContext";
+import ThemeToggle from "./components/common/ThemeToggle";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
-  const { setUserDetails } =useContext(UserContext);
+function App() {
+  const { setUserDetails } = useContext(UserContext);
   const { setToken } = useContext(Tokencontext);
   const navigate = useNavigate();
 
@@ -28,221 +19,218 @@ function App() {
     password: "",
     gender: "",
     age: "",
-    phoneNo:""
+    phoneNo: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const joinChat = () => {
-  //   if (isformValidate) {
-  //     navigate("/chat");
-  //   }
-  // }
+  // Invalidate any active session when reaching the registration page (e.g. via browser backward button)
+  useEffect(() => {
+    if (localStorage.getItem("token") || localStorage.getItem("user")) {
+      setToken(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUserDetails(initialUser);
+    }
+  }, [setToken, setUserDetails]);
 
-  const registeringNewUser = async (event) => { 
+  const registeringNewUser = async (event) => {
     event.preventDefault();
-    if (isformValidate()) {
-      // call api
-      try {
-        //map the gender to boolean isMale for backend
-        // 1. Extract gender and gather all other fields
-        const { gender, ...otherFields } = formData;
+    if (!isformValidate()) return;
 
-        // 2. Build backend payload with mapped boolean
-        const payload = {
-          ...otherFields,
-          isMale: gender.toLowerCase() == "male",
-        };
+    try {
+      setIsSubmitting(true);
+      const { gender, ...otherFields } = formData;
+      const payload = {
+        ...otherFields,
+        age: parseInt(formData.age, 10),
+        isMale: gender.toLowerCase() === "male",
+      };
 
-        const response = await userRegister(payload);
-        
-        // console.log(formData);
-        console.log(response);
-        const responseData = response.data;
-        setUserDetails({
-          name: responseData.name,
-          mail: responseData.mail,
-          gender: responseData.gender?true:false,
-          age: responseData.age,
-          phoneNo: responseData.phoneNo,
-          id:responseData.id
-        });
-        setToken(responseData.token);
-        console.log("token:" + responseData.token);
-        // console.log("userDetails:" + userDetails);
-        toast.success("Registered created Sucessfully...");
-        // setCurrentUser(formData.name);
-        // setRoomId(formData.id);
-        // setRoomOwner(response.data.name);
-        // setConnected(true);
-        // join the /chat directly after made the room sucessfully
-        navigate('/home');
+      const response = await userRegister(payload);
+      const responseData = response.data;
 
-        //when got register sucessfully
-        setFormData({
-          name: "",
-          mail: "",
-          password: "",
-          gender: "",
-          age: "",
-          phoneNo: ""
-        });
-      } catch (error) {
-        console.log(error.response);
-        console.log(error.response.status);
-        console.log(error.response.data);
-        if (error.response.status === 400) {
-          toast.error(error.response.data);
-          return toast.info(formData.id+" ID: already Exist, Enter another");
-        }   
-      }
+      setUserDetails({
+        name: responseData.name,
+        mail: responseData.mail || responseData.gmail || formData.mail,
+        gender: responseData.isMale ? "Male" : "Female",
+        age: responseData.age,
+        phoneNo: responseData.phoneNo,
+        id: responseData.id,
+      });
+      setToken(responseData.token);
+
+      toast.success("Account created successfully!");
+      // Replace history entry so back button doesn't loop back to register form
+      navigate("/home", { replace: true });
+    } catch (error) {
+      console.error(error);
+      const errorMsg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
+      toast.error(errorMsg);
+    } finally {
+      setIsSubmitting(false);
     }
-  
-   
-  }
+  };
+
   const isformValidate = () => {
-     if (!formData.name.trim()) {
-       toast.error("User Name is required!");
-       return false;
-     }
-    if (
-      !formData.age.trim()
-    ) {
-      toast.error("User age required!");
+    if (!formData.name.trim()) {
+      toast.error("User Name is required!");
       return false;
     }
-    if (!formData.gender.trim() 
-    ) {
-      console.log(formData.gender);
-      toast.error("User Gender required!");
+    if (!formData.gender.trim()) {
+      toast.error("Gender is required!");
       return false;
     }
-    if (
-      !formData.password.trim()
-    ) {
-      toast.error("Password is required!");
+    if (!formData.age || parseInt(formData.age, 10) <= 0) {
+      toast.error("Valid age is required!");
+      return false;
+    }
+    if (!formData.phoneNo.trim()) {
+      toast.error("Phone number is required!");
+      return false;
+    }
+    if (!formData.mail.trim()) {
+      toast.error("Email is required!");
+      return false;
+    }
+    if (!formData.password.trim() || formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters!");
       return false;
     }
     return true;
-  }
- 
+  };
+
   return (
-    <>
-      <Head></Head>
-      <form onSubmit={registeringNewUser}>
-        {/* Name */}
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Type Your Name <i>(ex: fullName)</i>
-            <i style={{ color: "red" }}>*</i>
-          </label>
-          <input
-            value={formData.name}
-            onChange={(event) =>
-              setFormData((prev) => ({ ...prev, name: event.target.value }))
-            }
-            type="text"
-            className="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            required
-          />
-        </div>
-        {/* Gender */}
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Select Your Gender <i style={{ color: "red" }}>*</i>
-          </label>
-          <select
-            value={formData.gender}
-            className="form-select"
-            aria-label="Default select example"
-            onChange={(e) =>
-              setFormData((p) => ({ ...p, gender: e.target.value }))
-            }
-            required
-          >
-            <option value="" disabled hidden></option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
+    <div className="authContainer">
+      {/* Top right theme switcher */}
+      <div className="authTopBar">
+        <ThemeToggle showLabel={false} />
+      </div>
+
+      <div className="authCard">
+        <div className="authHeader">
+          <div className="authLogo">
+            <i className="bi bi-chat-dots-fill"></i>
+          </div>
+          <h1 className="authTitle">Create Account</h1>
+          <p className="authSubtitle">Join ChatHub to connect with friends and communities</p>
         </div>
 
-        {/* Age */}
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Enter Your Age <i>(ex: 21)</i> <i style={{ color: "red" }}>*</i>
-          </label>
-          <input
-            value={formData.age}
-            onChange={(event) =>
-              setFormData((prev) => ({ ...prev, age: event.target.value }))
-            }
-            type="number"
-            className="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            required
-          />
-        </div>
-        {/* Pnone Number */}
+        <form className="authForm" onSubmit={registeringNewUser}>
+          {/* Full Name */}
+          <div className="formGroup">
+            <label className="formLabel">
+              Full Name <span className="requiredStar">*</span>
+            </label>
+            <input
+              value={formData.name}
+              onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+              type="text"
+              className="inputControl"
+              placeholder="e.g. John Doe"
+              required
+            />
+          </div>
 
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Type Your Phone No <i>(ex: 967800xxxx)</i>
-            <i style={{ color: "red" }}>*</i>
-          </label>
-          <input
-            value={formData.phoneNo}
-            onChange={(event) =>
-              setFormData((prev) => ({ ...prev, phoneNo: event.target.value }))
-            }
-            type="tel"
-            className="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            required
-          />
-        </div>
+          {/* Gender & Age Row */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div className="formGroup">
+              <label className="formLabel">
+                Gender <span className="requiredStar">*</span>
+              </label>
+              <select
+                value={formData.gender}
+                className="inputControl"
+                onChange={(e) => setFormData((p) => ({ ...p, gender: e.target.value }))}
+                required
+              >
+                <option value="" disabled hidden>
+                  Select
+                </option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
 
-        <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
-            Type Your Email <i>(ex: username001@gmail.com)</i>
-          </label>
-          <input
-            value={formData.mail}
-            onChange={(event) =>
-              setFormData((prev) => ({ ...prev, mail: event.target.value }))
-            }
-            type="text"
-            className="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-          />
-        </div>
+            <div className="formGroup">
+              <label className="formLabel">
+                Age <span className="requiredStar">*</span>
+              </label>
+              <input
+                value={formData.age}
+                onChange={(e) => setFormData((p) => ({ ...p, age: e.target.value }))}
+                type="number"
+                min="10"
+                max="120"
+                className="inputControl"
+                placeholder="21"
+                required
+              />
+            </div>
+          </div>
 
-        <div className="mb-3">
-          <label htmlFor="exampleInputPassword1" className="form-label">
-            Type Your Password <i>(ex: suggests strong one)</i>
-            <i style={{ color: "red" }}>*</i>
-          </label>
-          <input
-            value={formData.password}
-            onChange={(event) =>
-              setFormData((prev) => ({ ...prev, password: event.target.value }))
-            }
-            type="password"
-            className="form-control"
-            id="InputPassword"
-          />
-        </div>
+          {/* Phone Number */}
+          <div className="formGroup">
+            <label className="formLabel">
+              Phone Number <span className="requiredStar">*</span>
+            </label>
+            <input
+              value={formData.phoneNo}
+              onChange={(e) => setFormData((p) => ({ ...p, phoneNo: e.target.value }))}
+              type="tel"
+              className="inputControl"
+              placeholder="e.g. +91 9876543210"
+              required
+            />
+          </div>
 
-        <button type="submit" className="btn btn-primary">
-          Register
-        </button>
-        <Link to="/JoinRoom" className="nav-link">
-          Login
-        </Link>
-      </form>
-    </>
+          {/* Email */}
+          <div className="formGroup">
+            <label className="formLabel">
+              Email Address <span className="requiredStar">*</span>
+            </label>
+            <input
+              value={formData.mail}
+              onChange={(e) => setFormData((p) => ({ ...p, mail: e.target.value }))}
+              type="email"
+              className="inputControl"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="formGroup">
+            <label className="formLabel">
+              Password <span className="requiredStar">*</span>
+            </label>
+            <input
+              value={formData.password}
+              onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
+              type="password"
+              className="inputControl"
+              placeholder="At least 6 characters"
+              required
+            />
+          </div>
+
+          <button type="submit" className="submitBtn" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Account..." : "Register Now"}
+            {!isSubmitting && <i className="bi bi-arrow-right"></i>}
+          </button>
+        </form>
+
+        <div className="authFooter">
+          Already have an account?
+          <Link to="/joinRoom" replace className="authFooterLink">
+            Sign In
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
+
 export default App;

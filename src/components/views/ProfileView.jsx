@@ -1,7 +1,8 @@
 import { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./ProfileView.module.css";
-import { UserContext } from "../../context/ChatContext";
+import { UserContext, Tokencontext, initialUser } from "../../context/ChatContext";
 import {
   getOtherPersonalRequestService,
   personalRequestByMeService,
@@ -11,7 +12,18 @@ import {
 import { toast } from "react-toastify";
 
 export function ProfileView() {
-  const { userDetails } = useContext(UserContext);
+  const { userDetails, setUserDetails } = useContext(UserContext);
+  const { setToken } = useContext(Tokencontext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setToken(null);
+    setUserDetails(initialUser);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    toast.info("Logged out successfully");
+    navigate("/joinRoom", { replace: true });
+  };
   const [requests, setRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,6 +119,14 @@ export function ProfileView() {
             </div>
           ))}
         </div>
+
+        <button
+          type="button"
+          className={styles.logoutBtn}
+          onClick={handleLogout}
+        >
+          <i className="bi bi-box-arrow-right"></i> Log Out
+        </button>
       </div>
 
       {/* 2. Requests Section Container */}

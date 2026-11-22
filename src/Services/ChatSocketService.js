@@ -1,14 +1,19 @@
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
-import { baseURL } from "../config/AxiosHelper";
+import { baseURL, httpclient } from "../config/AxiosHelper";
 
 export const ROOM_TOPIC = (roomId) => `/topic/room.${roomId}/messages`;
 export const SEND_DESTINATION = "/app/chat.sendMessage";
 
+export const fetchRoomMessages = async (roomId) => {
+  const response = await httpclient.get(`/api/v2/rooms/${roomId}/messages`);
+  return response.data;
+};
+
 export const connectChatSocket = (onConnect, onError) => {
-  const sock = new SockJS(`${baseURL}ws-chat`);
+  const sock = new SockJS(`${baseURL}/ws-chat`);
   const client = Stomp.over(sock);
-  client.debug = null;
+  client.debug = () => {};
 
   const token = localStorage.getItem("token");
   client.connect(
@@ -41,3 +46,6 @@ export const sendRoomMessage = (client, roomId, content) => {
 export const disconnectChatSocket = (client) => {
   if (client && client.connected) client.disconnect();
 };
+export const fetchAllMessage=async () => {
+  httpclient.get("/api/v2/rooms/{roomId}/messages");
+}

@@ -4,7 +4,8 @@ import { Children, createContext, use, useContext, useState } from "react";
 const myWebSocketContext = createContext();
 
 export const MySocketProvider = ({children}) => {
-    const [stompClient, setStompClient] = useState(null);
+  const [stompClient, setStompClient] = useState(null);
+  
  
     return (
       <myWebSocketContext.Provider
